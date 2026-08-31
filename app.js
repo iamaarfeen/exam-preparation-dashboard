@@ -15,21 +15,90 @@ function cleanText(value) {
 }
 
 function parseDate(value) {
-  if (value === null || value === undefined || value === "") return null;
-  if (value instanceof Date && !isNaN(value)) return value;
-  if (typeof value === "number" && window.XLSX?.SSF) {
-    const d = XLSX.SSF.parse_date_code(value);
-    if (d) return new Date(d.y, d.m - 1, d.d);
+  if (value === null || value === undefined || value === "") {
+    return null;
   }
-  const s = String(value).trim();
-  const iso = new Date(s);
-  if (!isNaN(iso)) return iso;
-  const m = s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);
-  if (m) {
-    const day = Number(m[1]), month = Number(m[2]), year = Number(m[3]);
-    const d = new Date(year, month - 1, day);
-    if (!isNaN(d)) return d;
+
+  // Already a JavaScript Date
+  if (value instanceof Date && !isNaN(value.getTime())) {
+    return new Date(
+      value.getFullYear(),
+      value.getMonth(),
+      value.getDate()
+    );
   }
+
+  // Excel serial date
+  if (typeof value === "number") {
+    const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+    const date = new Date(
+      excelEpoch.getTime() + value * 86400000
+    );
+
+    if (!isNaN(date.getTime())) {
+      return new Date(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate()
+      );
+    }
+  }
+
+  const text = String(value).trim();
+
+  // ISO format: YYYY-MM-DD
+  let match = text.match(
+    /^(\d{4})-(\d{1,2})-(\d{1,2})$/
+  );
+
+  if (match) {
+    const year = Number(match[1]);
+    const month = Number(match[2]) - 1;
+    const day = Number(match[3]);
+
+    const date = new Date(year, month, day);
+
+    if (
+      date.getFullYear() === year &&
+      date.getMonth() === month &&
+      date.getDate() === day
+    ) {
+      return date;
+    }
+  }
+
+  // Indian/common format: DD/MM/YYYY or DD-MM-YYYY
+  match = text.match(
+    /^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/
+  );
+
+  if (match) {
+    const day = Number(match[1]);
+    const month = Number(match[2]) - 1;
+    const year = Number(match[3]);
+
+    const date = new Date(year, month, day);
+
+    if (
+      date.getFullYear() === year &&
+      date.getMonth() === month &&
+      date.getDate() === day
+    ) {
+      return date;
+    }
+  }
+
+  // Formats such as "01 Sep 2026"
+  const parsed = new Date(text);
+
+  if (!isNaN(parsed.getTime())) {
+    return new Date(
+      parsed.getFullYear(),
+      parsed.getMonth(),
+      parsed.getDate()
+    );
+  }
+
   return null;
 }
 
