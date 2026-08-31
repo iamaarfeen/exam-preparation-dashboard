@@ -618,9 +618,19 @@ $("demoBtn2").addEventListener("click", demoWorkbook);
 $("subjectFilter").addEventListener("change", renderTable);
 $("statusFilter").addEventListener("change", renderTable);
 $("searchBox").addEventListener("input", renderTable);
+
 const savedExamDate = localStorage.getItem("icseExamDate");
-if (savedExamDate) $("examDate").value = savedExamDate;
-$("examDate").addEventListener("change", () => {
-  localStorage.setItem("icseExamDate", $("examDate").value);
+
+if (savedExamDate) {
+  $("examDate").value = savedExamDate;
+}
+
+$("examDate").addEventListener("change", function () {
+  const selectedDate = this.value;
+  if (selectedDate) {
+    localStorage.setItem("icseExamDate", selectedDate);
+  } else {
+    localStorage.removeItem("icseExamDate");
+  }
   renderForecast();
 });
