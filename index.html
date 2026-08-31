@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ICSE 10 Board Preparation Dashboard</title>
+  <meta name="description" content="ICSE Class 10 syllabus preparation and revision dashboard driven by an Excel workbook.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">ICSE CLASS X • BOARD PREPARATION</div>
+      <h1>Preparation Dashboard</h1>
+      <p class="subtitle">Track the journey from first chapter to final revision.</p>
+    </div>
+    <div class="actions">
+      <label class="upload-btn">
+        <input id="excelFile" type="file" accept=".xlsx,.xls,.csv">
+        Upload Excel
+      </label>
+      <button id="demoBtn" class="secondary">Load Demo</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="emptyState" class="empty-card">
+      <div class="empty-icon">📊</div>
+      <h2>Upload your preparation workbook</h2>
+      <p>Use one sheet per subject. The dashboard reads Chapter Number, Chapter Name, Start Date, Completion Date and Preparation Revision Date.</p>
+      <div class="template-actions">
+        <button id="demoBtn2" class="primary">Load Demo Workbook</button>
+        <a class="secondary link-btn" href="README.md" target="_blank">Read instructions</a>
+      </div>
+    </section>
+
+    <section id="dashboard" class="hidden">
+      <div class="status-row">
+        <div>
+          <strong id="fileName">Workbook</strong>
+          <span id="lastUpdated">—</span>
+        </div>
+        <div class="legend">
+          <span><i class="dot notstarted"></i> Not started</span>
+          <span><i class="dot progress"></i> In progress</span>
+          <span><i class="dot completed"></i> Completed</span>
+          <span><i class="dot revised"></i> Revised</span>
+        </div>
+      </div>
+
+      <section class="settings-strip">
+        <div>
+          <strong>Board exam target</strong>
+          <span>Set the expected first exam date to calculate the completion forecast.</span>
+        </div>
+        <label class="date-setting">Exam date <input id="examDate" type="date"></label>
+      </section>
+
+      <section class="stats-grid">
+        <article class="stat-card accent">
+          <span>Overall syllabus</span>
+          <strong id="overallPercent">0%</strong>
+          <small id="overallDetail">0 / 0 chapters completed</small>
+          <div class="progress-track"><div id="overallBar" class="progress-fill"></div></div>
+        </article>
+        <article class="stat-card">
+          <span>Chapters</span>
+          <strong id="chapterTotal">0</strong>
+          <small id="chapterBreakdown">0 started • 0 completed • 0 revised</small>
+        </article>
+        <article class="stat-card">
+          <span>Subjects</span>
+          <strong id="subjectTotal">0</strong>
+          <small id="subjectBreakdown">—</small>
+        </article>
+        <article class="stat-card">
+          <span>Revision coverage</span>
+          <strong id="revisionPercent">0%</strong>
+          <small id="revisionDetail">0 / 0 chapters revised</small>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Preparation journey</h2>
+            <p>Completed chapters over time. The dotted line shows the planned total chapter count.</p>
+          </div>
+        </div>
+        <div class="chart-wrap large"><canvas id="journeyChart"></canvas></div>
+      </section>
+
+      <section class="two-col">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Subject progress</h2>
+              <p>Completion and revision status by subject.</p>
+            </div>
+          </div>
+          <div class="chart-wrap"><canvas id="subjectChart"></canvas></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Current status</h2>
+              <p>Where the chapters stand right now.</p>
+            </div>
+          </div>
+          <div class="chart-wrap"><canvas id="statusChart"></canvas></div>
+        </section>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading responsive-heading">
+          <div>
+            <h2>Subject cards</h2>
+            <p>Click a subject to filter the chapter table.</p>
+          </div>
+          <select id="subjectFilter" class="select">
+            <option value="ALL">All subjects</option>
+          </select>
+        </div>
+        <div id="subjectCards" class="subject-grid"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading responsive-heading">
+          <div>
+            <h2>Chapter tracker</h2>
+            <p>Milestones: Started → Completed → Preparation Revision.</p>
+          </div>
+          <div class="table-tools">
+            <input id="searchBox" class="search" type="search" placeholder="Search chapter…">
+            <select id="statusFilter" class="select">
+              <option value="ALL">All statuses</option>
+              <option value="Not Started">Not Started</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+              <option value="Revised">Revised</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>#</th>
+                <th>Chapter</th>
+                <th>Start</th>
+                <th>Completed</th>
+                <th>Revision</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="chapterTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Weekly target vs actual</h2>
+            <p>Add a <strong>Weekly Plan</strong> sheet to the workbook to compare planned chapters/revisions with actual progress.</p>
+          </div>
+        </div>
+        <div id="weeklyTableWrap" class="table-scroll"></div>
+      </section>
+
+      <section class="panel forecast-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Board completion forecast</h2>
+            <p>Estimated from the student's actual completion pace.</p>
+          </div>
+        </div>
+        <div id="forecastBox" class="forecast-box"></div>
+      </section>
+
+      <section class="panel weekly-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Sunday review snapshot</h2>
+            <p>Use this section during the weekly review meeting.</p>
+          </div>
+        </div>
+        <div id="reviewSnapshot" class="review-grid"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <span>ICSE 10 Preparation Dashboard</span>
+    <span>Excel is the source of truth • Runs entirely in the browser</span>
+  </footer>
+
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
