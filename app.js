@@ -151,61 +151,92 @@ async function handleFile(file) {
 }
 
 function demoWorkbook() {
-  const wb = XLSX.utils.book_new();
-  const subjects = {
-    Mathematics: [
-      [1, "Commercial Mathematics", "2026-06-01", "2026-06-05", "2026-06-08"],
-      [2, "Algebra", "2026-06-06", "2026-06-13", "2026-06-16"],
-      [3, "Geometry", "2026-06-14", "2026-06-22", "2026-06-25"],
-      [4, "Mensuration", "2026-06-23", "", ""],
-      [5, "Statistics", "", "", ""],
-      [6, "Probability", "", "", ""]
-    ],
-    Physics: [
-      [1, "Force", "2026-06-03", "2026-06-09", "2026-06-12"],
-      [2, "Work, Energy and Power", "2026-06-10", "2026-06-18", ""],
-      [3, "Machines", "2026-06-19", "", ""],
-      [4, "Light", "", "", ""],
-      [5, "Sound", "", "", ""]
-    ],
-    Chemistry: [
-      [1, "Periodic Table", "2026-06-02", "2026-06-07", "2026-06-10"],
-      [2, "Chemical Bonding", "2026-06-08", "2026-06-15", "2026-06-18"],
-      [3, "Acids, Bases and Salts", "2026-06-16", "2026-06-24", ""],
-      [4, "Analytical Chemistry", "", "", ""],
-      [5, "Organic Chemistry", "", "", ""]
-    ],
-    Economics: [
-      [1, "The Productive System", "2026-06-04", "2026-06-09", "2026-06-13"],
-      [2, "Demand and Supply", "2026-06-10", "2026-06-17", ""],
-      [3, "Market", "", "", ""],
-      [4, "Public Finance", "", "", ""]
-    ],
-    History: [
-      [1, "The First War of Independence", "2026-06-01", "2026-06-08", "2026-06-12"],
-      [2, "Growth of Nationalism", "2026-06-09", "2026-06-16", "2026-06-20"],
-      [3, "The Contemporary World", "2026-06-17", "", ""],
-      [4, "Towards Independence", "", "", ""]
-    ]
-  };
-  Object.entries(subjects).forEach(([name, rows]) => {
-    const ws = XLSX.utils.aoa_to_sheet([
-      ["Chapter Number", "Chapter Name", "Start Date", "Completion Date", "Preparation Revision Date"],
-      ...rows
-    ]);
-    XLSX.utils.book_append_sheet(wb, ws, name);
-  });
-  const weekly = XLSX.utils.aoa_to_sheet([
-    ["Week Start", "Week End", "Subject", "Target Chapters", "Target Revisions"],
-    ["2026-06-01", "2026-06-07", "Mathematics", 1, 1],
-    ["2026-06-08", "2026-06-14", "Mathematics", 1, 1],
-    ["2026-06-15", "2026-06-21", "Physics", 1, 1],
-    ["2026-06-22", "2026-06-28", "Chemistry", 1, 1],
-    ["2026-06-29", "2026-07-05", "Economics", 1, 1],
-    ["2026-07-06", "2026-07-12", "History", 1, 1]
-  ]);
-  XLSX.utils.book_append_sheet(wb, weekly, "Weekly Plan");
-  loadWorkbook(wb, "Demo ICSE Preparation Workbook.xlsx");
+  const demoRows = [
+    ["Mathematics", 1, "Commercial Mathematics", "2026-06-01", "2026-06-05", "2026-06-08"],
+    ["Mathematics", 2, "Algebra", "2026-06-06", "2026-06-13", "2026-06-16"],
+    ["Mathematics", 3, "Geometry", "2026-06-14", "2026-06-22", "2026-06-25"],
+    ["Mathematics", 4, "Mensuration", "2026-06-23", "", ""],
+    ["Mathematics", 5, "Statistics", "", "", ""],
+    ["Mathematics", 6, "Probability", "", "", ""],
+
+    ["Physics", 1, "Force", "2026-06-03", "2026-06-09", "2026-06-12"],
+    ["Physics", 2, "Work, Energy and Power", "2026-06-10", "2026-06-18", ""],
+    ["Physics", 3, "Machines", "2026-06-19", "", ""],
+    ["Physics", 4, "Light", "", "", ""],
+    ["Physics", 5, "Sound", "", "", ""],
+
+    ["Chemistry", 1, "Periodic Table", "2026-06-02", "2026-06-07", "2026-06-10"],
+    ["Chemistry", 2, "Chemical Bonding", "2026-06-08", "2026-06-15", "2026-06-18"],
+    ["Chemistry", 3, "Acids, Bases and Salts", "2026-06-16", "2026-06-24", ""],
+    ["Chemistry", 4, "Analytical Chemistry", "", "", ""],
+    ["Chemistry", 5, "Organic Chemistry", "", "", ""],
+
+    ["Economics", 1, "The Productive System", "2026-06-04", "2026-06-09", "2026-06-13"],
+    ["Economics", 2, "Demand and Supply", "2026-06-10", "2026-06-17", ""],
+    ["Economics", 3, "Market", "", "", ""],
+    ["Economics", 4, "Public Finance", "", "", ""],
+
+    ["History", 1, "The First War of Independence", "2026-06-01", "2026-06-08", "2026-06-12"],
+    ["History", 2, "Growth of Nationalism", "2026-06-09", "2026-06-16", "2026-06-20"],
+    ["History", 3, "The Contemporary World", "2026-06-17", "", ""],
+    ["History", 4, "Towards Independence", "", "", ""]
+  ];
+
+  state.rows = demoRows.map(row => ({
+    subject: row[0],
+    number: String(row[1]),
+    name: row[2],
+    start: parseDate(row[3]),
+    completion: parseDate(row[4]),
+    revision: parseDate(row[5]),
+    sourceRow: null
+  }));
+
+  state.weeklyPlan = [
+    {
+      weekStart: parseDate("2026-06-01"),
+      weekEnd: parseDate("2026-06-07"),
+      subject: "Mathematics",
+      targetChapters: 1,
+      targetRevisions: 1
+    },
+    {
+      weekStart: parseDate("2026-06-08"),
+      weekEnd: parseDate("2026-06-14"),
+      subject: "Mathematics",
+      targetChapters: 1,
+      targetRevisions: 1
+    },
+    {
+      weekStart: parseDate("2026-06-15"),
+      weekEnd: parseDate("2026-06-21"),
+      subject: "Physics",
+      targetChapters: 1,
+      targetRevisions: 1
+    },
+    {
+      weekStart: parseDate("2026-06-22"),
+      weekEnd: parseDate("2026-06-28"),
+      subject: "Chemistry",
+      targetChapters: 1,
+      targetRevisions: 1
+    },
+    {
+      weekStart: parseDate("2026-06-29"),
+      weekEnd: parseDate("2026-07-05"),
+      subject: "Economics",
+      targetChapters: 1,
+      targetRevisions: 1
+    }
+  ];
+
+  $("emptyState").classList.add("hidden");
+  $("dashboard").classList.remove("hidden");
+
+  $("fileName").textContent = "Demo ICSE Preparation Workbook";
+  $("lastUpdated").textContent = `Demo loaded ${new Date().toLocaleString()}`;
+
+  render();
 }
 
 function render() {
