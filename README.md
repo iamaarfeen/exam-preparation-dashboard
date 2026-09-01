@@ -1,6 +1,6 @@
-# ICSE 10 Preparation Dashboard
+# EXAM Preparation Dashboard
 
-A lightweight static dashboard for tracking an ICSE Class 10 student's syllabus preparation.
+A lightweight static dashboard for tracking a student's syllabus preparation.
 
 ## Tech stack
 
@@ -75,7 +75,7 @@ The project is static. You can deploy the folder directly with Netlify Drop.
 
 1. Log in to Netlify.
 2. Open Netlify Drop: https://app.netlify.com/drop
-3. Drag the `icse10-preparation-dashboard` folder onto the drop area.
+3. Drag the `exam-preparation-dashboard` folder onto the drop area.
 4. Netlify will publish it with a `netlify.app` URL.
 5. Open the site and upload your Excel workbook.
 
@@ -133,6 +133,6 @@ Set the expected first board exam date in the dashboard. The app estimates the s
 - On track, but watch pace
 - Behind the current pace
 
-The forecast is an estimate, not an official ICSE timetable.
+The forecast is an estimate, not an official Exam timetable.
 
 The selected exam date is saved only in the browser's local storage.
