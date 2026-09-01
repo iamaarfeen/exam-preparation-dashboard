@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rf9 - Board Preparation Dashboard</title>
-  <meta name="description" content="ICSE Class 10 syllabus preparation and revision dashboard driven by an Excel workbook.">
+  <title>Exam Preparation Dashboard</title>
+  <meta name="description" content="Exam syllabus preparation and revision dashboard driven by an Excel workbook.">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
+
 </head>
 <body>
   <header class="topbar">
@@ -25,9 +27,10 @@
 
   <main class="container">
     <section id="emptyState" class="empty-card">
-      <div class="empty-icon">📊</div>
+      <div class="empty-icon"><span class="material-symbols-outlined">database_search</span></div>
       <h2>Upload your preparation workbook</h2>
       <p>Use one sheet per subject. The dashboard reads Chapter Number, Chapter Name, Start Date, Completion Date and Preparation Revision Date.</p>
+      <a href="Sample_Excel_Sheet_for_Exam_Preparation_Analysis_Website.xlsx" download="Sample_Excel_Sheet_for_Exam_Preparation_Analysis_Website.xlsx" class="sample-download">New to this site? <span>Download Sample Excel Sheet</span> ↓ </a>
       <div class="template-actions">
         <button id="demoBtn2" class="primary">Load Demo Workbook</button>
         <a class="secondary link-btn" href="README.md" target="_blank">Read instructions</a>
@@ -193,7 +196,7 @@
   </main>
 
   <footer>
-    <span>Developed by Mohd Aarfeen ❤️ For my dear SAHARSH 😘</span>
+    <span>Developed by Mohd Aarfeen ❤️</span>
     <span>Excel is the source of truth • Runs entirely in the browser</span>
   </footer>
 
