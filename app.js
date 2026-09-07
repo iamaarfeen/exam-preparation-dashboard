@@ -613,6 +613,162 @@ function workbookToRows(workbook) {
 }
 
 
+
+/* =========================================================
+   SAVE HOMEWORK SHEET
+   ========================================================= */
+function saveHomeworkSheet(workbook) {
+
+  const homeworkSheetName =
+    workbook.SheetNames.find(
+      name => normalizeHeader(name) === "homework"
+    );
+
+  if (!homeworkSheetName) {
+
+    localStorage.removeItem("icseHomeworkData");
+
+    return;
+
+  }
+
+
+  const sheet =
+    workbook.Sheets[homeworkSheetName];
+
+
+  const data =
+    XLSX.utils.sheet_to_json(
+      sheet,
+      {
+        defval: "",
+        raw: true
+      }
+    );
+
+
+  const homeworkRows =
+    data.map((raw, index) => {
+
+      const normalized = {};
+
+      Object.entries(raw).forEach(
+        ([key, value]) => {
+          normalized[normalizeHeader(key)] = value;
+        }
+      );
+
+
+      const pick = (...keys) => {
+
+        for (const key of keys) {
+
+          const value =
+            normalized[
+              normalizeHeader(key)
+            ];
+
+          if (value !== undefined) {
+            return value;
+          }
+
+        }
+
+        return "";
+
+      };
+
+
+      const assignDate =
+        pick(
+          "Assign Date",
+          "Assignment Date",
+          "Assigned Date"
+        );
+
+
+      const submissionDate =
+        pick(
+          "Submission Date",
+          "Due Date",
+          "Expected Submission Date"
+        );
+
+
+      const subject =
+        cleanText(
+          pick("Subject")
+        );
+
+
+      const submittedDate =
+        pick(
+          "Submitted Date",
+          "Actual Submission Date"
+        );
+
+
+      const pointsRaw =
+        pick(
+          "Points out of 10",
+          "Points",
+          "Marks",
+          "Score"
+        );
+
+
+      const points =
+        pointsRaw === ""
+          ? null
+          : Number(pointsRaw);
+
+
+      const remark =
+        cleanText(
+          pick("Remark", "Remarks", "Comment")
+        );
+
+
+      return {
+
+        assignDate:
+          assignDate instanceof Date
+            ? assignDate.toISOString()
+            : assignDate,
+
+        submissionDate:
+          submissionDate instanceof Date
+            ? submissionDate.toISOString()
+            : submissionDate,
+
+        subject,
+
+        submittedDate:
+          submittedDate instanceof Date
+            ? submittedDate.toISOString()
+            : submittedDate,
+
+        points:
+          Number.isFinite(points)
+            ? points
+            : null,
+
+        remark
+
+      };
+
+    });
+
+
+  localStorage.setItem(
+    "icseHomeworkData",
+    JSON.stringify(homeworkRows)
+  );
+
+}
+
+
+
 /* =========================================================
    LOAD WORKBOOK
    ========================================================= */
@@ -624,6 +780,8 @@ function loadWorkbook(
 
   const rows =
     workbookToRows(workbook);
+
+  saveHomeworkSheet(workbook);
 
   if (!rows.length) {
 
